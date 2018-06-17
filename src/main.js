@@ -1,22 +1,31 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router'; // 1. import vue-router
-import App from './App.vue';
- 
+import Vue from 'vue'
+import VueRouter from 'vue-router';
+import App from './App.vue'
+import { routes } from './routes';
 
+Vue.use(VueRouter);
 
-import { routes } from './routes.js'; // 2. import const with routes paths
-
-Vue.use(VueRouter);  // 3. use Vue Router
- 
-
-const router = new VueRouter ({  // 4. create a VueRouter instance
+const router = new VueRouter({
   routes,
-  mode: 'history'
+  mode: 'history',
+  scrollBehavior(to, from, savedPosition) {  //! scroll beahviour for #hash
+    if (savedPosition) {
+      return savedPosition;
+    }
+    if (to.hash) {
+      return { selector: to.hash };
+    }
+    return { x: 0, y: 0 };
+  }
+});
+
+router.beforeEach((to, from, next) => {  //! GUARDING - Function executed BEFORE each routing 
+  console.log('global beforeEach');
+  next();
 });
 
 new Vue({
   el: '#app',
-  render: h => h(App),
-  router, // 5. use router in the Vue instance
-
-});
+  router,
+  render: h => h(App)
+})
